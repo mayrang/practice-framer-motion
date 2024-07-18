@@ -2,13 +2,15 @@ import React, { useRef } from "react";
 
 import "./App.css";
 import styled from "styled-components";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useMotionValueEvent, useScroll, useTransform, useViewportScroll } from "framer-motion";
 
-const Wrapper = styled.div`
-  height: 100dvh;
+const Wrapper = styled(motion.div)`
+  height: 200dvh;
   width: 100dvw;
   display: flex;
+  overflow-x: hidden;
   justify-content: center;
+  background: linear-gradient(135deg, rgb(238, 0, 153), rgb(221, 0, 238));
   align-items: center;
 `;
 
@@ -109,21 +111,37 @@ const boxVarients = {
 // get set도 있음
 // useTransform : 첫번째 인자 변하는 값 두번째 인자 array 첫번째 인자가 각각 어느값일때 인지 넣기, 세번째 출력 array
 // 두번째 인자의 array값들일때 어떤 출력을 할지
+
+// useScroll 스크롤의 motionValue를 넘겨줌 scrollY 픽셀단위 scrollYProgress 0~1
 function App() {
-  const biggerBoxRef = useRef<HTMLDivElement>(null);
+  //const biggerBoxRef = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const rotateZ = useTransform(x, [-800, 800], [-360, 360]);
+  const background = useTransform(
+    x,
+    [-800, 0, 800],
+    [
+      "linear-gradient(135deg,rgb(0, 171, 238),rgb(16, 0, 238))",
+      "linear-gradient(135deg, rgb(238, 0, 153), rgb(221, 0, 238))",
+      "linear-gradient(135deg,rgb(20, 238, 0),rgb(214, 238, 0))",
+    ]
+  );
+  const { scrollYProgress } = useScroll();
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 5]);
+  useMotionValueEvent(x, "change", (lastValue) => {
+    console.log(x.get(), lastValue);
+  });
   return (
-    <Wrapper>
-      <BiggerBox ref={biggerBoxRef}>
-        <Box
-          drag
-          dragSnapToOrigin
-          dragConstraints={biggerBoxRef}
-          variants={boxVarients}
-          whileHover="hover"
-          initial="start"
-          whileTap="click"
-        ></Box>
-      </BiggerBox>
+    <Wrapper style={{ background }}>
+      <Box
+        drag="x"
+        style={{ x, rotateZ, scale }}
+        dragSnapToOrigin
+        variants={boxVarients}
+        // whileHover="hover"
+        initial="start"
+        // whileTap="click"
+      ></Box>
     </Wrapper>
   );
 }

@@ -232,6 +232,10 @@ const boxVarients = {
 // ex) isSelected && < motion.div layoutId="underline" />
 // https://www.framer.com/docs/animate-shared-layout/#animate-between-components
 // 출처 : sugar님 comment
+
+// id가 null이 되면서 AnimatePresence는 Box가 사라지게 되고, exit 애니메이션을 트리거합니다.
+// AnimatePresence는 해당 Box의 layoutId를 기억하고 있기 때문에, 애니메이션이 자연스럽게 이어집니다.
+// 따라서 id가 null이 되더라도 layoutId가 끊기는 것이 아니라, AnimatePresence가 이를 처리하여 자연스러운 애니메이션 전환이 이루어지게 되는 것입니다.
 function Practice() {
   const [clicked, setClicked] = useState(false);
 
